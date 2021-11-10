@@ -54,6 +54,8 @@ public final class EnvelopeSender extends DirectoryProcessor implements IEnvelop
       return;
     }
 
+    logger.log(SentryLevel.WARNING,"before streaming");
+
     try (final InputStream is = new BufferedInputStream(new FileInputStream(file))) {
       SentryEnvelope envelope = serializer.deserializeEnvelope(is);
       if (envelope == null) {

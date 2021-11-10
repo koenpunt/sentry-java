@@ -103,6 +103,8 @@ public final class SentryClient implements ISentryClient {
       }
     }
 
+    options.getLogger().log(SentryLevel.DEBUG, "after setting session");
+
     if (event != null) {
       if (event.getThrowable() != null
           && options.containsIgnoredExceptionForType(event.getThrowable())) {
@@ -133,9 +135,11 @@ public final class SentryClient implements ISentryClient {
               : null;
       final SentryEnvelope envelope =
           buildEnvelope(event, getAttachmentsFromScope(scope), session, traceState);
+          options.getLogger().log(SentryLevel.ERROR,"After building envelope.");
 
       if (envelope != null) {
         transport.send(envelope, hint);
+        options.getLogger().log(SentryLevel.ERROR,"After calling transport.");
       }
     } catch (IOException e) {
       options.getLogger().log(SentryLevel.WARNING, e, "Capturing event %s failed.", sentryId);
@@ -220,6 +224,7 @@ public final class SentryClient implements ISentryClient {
                 SentryLevel.DEBUG,
                 "Event was dropped by a processor: %s",
                 processor.getClass().getName());
+        options.getLogger().log(SentryLevel.DEBUG,"Event is null");
         break;
       }
     }
@@ -550,6 +555,7 @@ public final class SentryClient implements ISentryClient {
     if (beforeSend != null) {
       try {
         event = beforeSend.execute(event, hint);
+        options.getLogger().log(SentryLevel.ERROR,"After before send.");
       } catch (Exception e) {
         options
             .getLogger()

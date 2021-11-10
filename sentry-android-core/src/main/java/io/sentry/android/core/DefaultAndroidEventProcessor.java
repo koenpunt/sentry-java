@@ -128,6 +128,7 @@ final class DefaultAndroidEventProcessor implements EventProcessor {
     }
 
     setCommons(event, true, applyScopeData);
+    logger.log(SentryLevel.ERROR, "Set SetCommons.");
 
     return event;
   }
@@ -139,7 +140,9 @@ final class DefaultAndroidEventProcessor implements EventProcessor {
     mergeUser(event);
     setDevice(event, errorEvent, applyScopeData);
     mergeOS(event);
+    logger.log(SentryLevel.ERROR, "Merge OS.");
     setSideLoadedInfo(event);
+    logger.log(SentryLevel.ERROR, "Set SideLoaded.");
   }
 
   private boolean shouldApplyScopeData(
@@ -283,9 +286,11 @@ final class DefaultAndroidEventProcessor implements EventProcessor {
     // setting such values require IO hence we don't run for transactions
     if (errorEvent) {
       setDeviceIO(device, applyScopeData);
+      logger.log(SentryLevel.ERROR, "Set DeviceIO.");
     }
 
     device.setOrientation(getOrientation());
+    logger.log(SentryLevel.ERROR, "Set Orientation.");
 
     try {
       Object emulator = contextData.get().get(EMULATOR);
@@ -296,6 +301,8 @@ final class DefaultAndroidEventProcessor implements EventProcessor {
       logger.log(SentryLevel.ERROR, "Error getting emulator.", e);
     }
 
+    logger.log(SentryLevel.ERROR, "Set Emulator.");
+
     DisplayMetrics displayMetrics = getDisplayMetrics();
     if (displayMetrics != null) {
       device.setScreenWidthPixels(displayMetrics.widthPixels);
@@ -304,14 +311,20 @@ final class DefaultAndroidEventProcessor implements EventProcessor {
       device.setScreenDpi(displayMetrics.densityDpi);
     }
 
+    logger.log(SentryLevel.ERROR, "Set Display.");
+
     device.setBootTime(getBootTime());
+    logger.log(SentryLevel.ERROR, "Set Boottime.");
     device.setTimezone(getTimeZone());
+    logger.log(SentryLevel.ERROR, "Set Timezone.");
 
     if (device.getId() == null) {
       device.setId(getDeviceId());
+      logger.log(SentryLevel.ERROR, "Set DeviceID.");
     }
     if (device.getLanguage() == null) {
       device.setLanguage(Locale.getDefault().toString()); // eg en_US
+      logger.log(SentryLevel.ERROR, "Set Language.");
     }
 
     return device;

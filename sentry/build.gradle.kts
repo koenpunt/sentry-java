@@ -1,11 +1,9 @@
-import net.ltgt.gradle.errorprone.errorprone
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-library`
     kotlin("jvm")
     jacoco
-    id(Config.QualityPlugins.errorProne)
     id(Config.QualityPlugins.gradleVersions)
     id(Config.BuildPlugins.buildConfig) version Config.BuildPlugins.buildConfigVersion
 }
@@ -24,11 +22,7 @@ dependencies {
     implementation(Config.Libs.gson)
 
     compileOnly(Config.CompileOnly.nopen)
-    errorprone(Config.CompileOnly.nopenChecker)
-    errorprone(Config.CompileOnly.errorprone)
-    errorproneJavac(Config.CompileOnly.errorProneJavac8)
     compileOnly(Config.CompileOnly.jetbrainsAnnotations)
-    errorprone(Config.CompileOnly.errorProneNullAway)
 
     // tests
     testImplementation(kotlin(Config.kotlinStdLib))
@@ -84,9 +78,4 @@ buildConfig {
 val generateBuildConfig by tasks
 tasks.withType<JavaCompile>() {
     dependsOn(generateBuildConfig)
-    options.errorprone {
-        check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
-        option("NullAway:AnnotatedPackages", "io.sentry")
-    }
-    options.errorprone.errorproneArgs.add("-XepExcludedPaths:.*/io/sentry/vendor/.*")
 }

@@ -75,6 +75,7 @@ public final class AsyncHttpTransport implements ITransport {
     }
 
     final SentryEnvelope filteredEnvelope = rateLimiter.filter(envelope, hint);
+    options.getLogger().log(SentryLevel.DEBUG, "after filtering eveloipe");
 
     if (filteredEnvelope == null) {
       if (cached) {
@@ -82,6 +83,7 @@ public final class AsyncHttpTransport implements ITransport {
       }
     } else {
       executor.submit(new EnvelopeSender(filteredEnvelope, hint, currentEnvelopeCache));
+      options.getLogger().log(SentryLevel.DEBUG, "after calling executor");
     }
   }
 
