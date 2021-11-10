@@ -8,7 +8,10 @@ import io.sentry.hints.Flushable;
 import io.sentry.hints.SessionEnd;
 import io.sentry.protocol.Mechanism;
 import io.sentry.util.Objects;
+
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.PrintStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
@@ -86,6 +89,11 @@ public final class UncaughtExceptionHandlerIntegration
   public void uncaughtException(Thread thread, Throwable thrown) {
     if (options != null && hub != null) {
       options.getLogger().log(SentryLevel.INFO, "Uncaught exception received.");
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      thrown.printStackTrace(new PrintStream(out));
+      options.getLogger().log(SentryLevel.DEBUG, "%s\nStacktrace. %s",
+        thrown.getMessage(),
+        new String(out.toByteArray()));
 
       try {
         final UncaughtExceptionHint hint =

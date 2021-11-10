@@ -85,6 +85,7 @@ public final class SentryClient implements ISentryClient {
     }
 
     event = processEvent(event, hint, options.getEventProcessors());
+    options.getLogger().log(SentryLevel.DEBUG, "Event processed: %s", event.getEventId());
 
     Session session = null;
 
@@ -204,9 +205,28 @@ public final class SentryClient implements ISentryClient {
       @NotNull SentryEvent event,
       final @Nullable Object hint,
       final @NotNull List<EventProcessor> eventProcessors) {
+
+    options
+      .getLogger()
+      .log(
+        SentryLevel.DEBUG,
+        "Running %d event processors",
+        eventProcessors.size());
     for (final EventProcessor processor : eventProcessors) {
       try {
+        options
+          .getLogger()
+          .log(
+            SentryLevel.DEBUG,
+            "Processing event by processor: %s",
+            processor.getClass().getName());
         event = processor.process(event, hint);
+        options
+          .getLogger()
+          .log(
+            SentryLevel.DEBUG,
+            "Processed event by processor: %s",
+            processor.getClass().getName());
       } catch (Exception e) {
         options
             .getLogger()
@@ -216,7 +236,6 @@ public final class SentryClient implements ISentryClient {
                 "An exception occurred while processing event by processor: %s",
                 processor.getClass().getName());
       }
-
       if (event == null) {
         options
             .getLogger()
@@ -228,6 +247,10 @@ public final class SentryClient implements ISentryClient {
         break;
       }
     }
+
+    options
+      .getLogger()
+      .log(SentryLevel.DEBUG, "All processors completed");
     return event;
   }
 
